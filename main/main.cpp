@@ -1,41 +1,42 @@
 #include <chrono>
 #include <thread>
 
+#include <bootloader_random.h>
+#include <esp_random.h>
+#include <esp_system.h>
+
 #include "logger.hpp"
 #include "task.hpp"
+
+#include "usb.hpp"
 
 using namespace std::chrono_literals;
 
 extern "C" void app_main(void) {
-  static auto start = std::chrono::high_resolution_clock::now();
-  static auto elapsed = [&]() {
-    auto now = std::chrono::high_resolution_clock::now();
-    return std::chrono::duration<float>(now - start).count();
-  };
-
-  espp::Logger logger({.tag = "Template", .level = espp::Logger::Verbosity::DEBUG});
+  espp::Logger logger({.tag = "USB-COM", .level = espp::Logger::Verbosity::DEBUG});
 
   logger.info("Bootup");
 
-  // make a simple task that prints "Hello World!" every second
-  espp::Task task({
-      .callback = [&](auto &m, auto &cv) -> bool {
-        logger.debug("[{:.3f}] Hello from the task!", elapsed());
-        std::unique_lock<std::mutex> lock(m);
-        cv.wait_for(lock, 1s);
-        // we don't want to stop the task, so return false
-        return false;
-      },
-        .task_config = {
-          .name = "Hello World",
-          .stack_size_bytes = 4096,
-        }
-    });
-  task.start();
+  // enable internal entropy source (SAR ADC) manually, since we won't be using
+  // WiFi or BLE
+  bootloader_random_enable();
 
-  // also print in the main thread
+  // generate a random serial number
+  std::string serial_number = "";
+  // generate a random 10-digit serial number
+  for (int i = 0; i < 10; i++) {
+    serial_number += std::to_string(esp_random() % 10);
+  }
+  // now start the USB CDC
+  start_usb_cdc(serial_number);
+
+  // now loop forever
   while (true) {
-    logger.debug("[{:.3f}] Hello World!", elapsed());
-    std::this_thread::sleep_for(1s);
+    std::this_thread::sleep_for(100ms);
+    if (is_usb_mounted()) {
+      logger.info("USB mounted, resetting processor in 100ms");
+      std::this_thread::sleep_for(100ms);
+      esp_restart();
+    }
   }
 }
