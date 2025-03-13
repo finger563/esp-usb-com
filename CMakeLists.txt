@@ -11,7 +11,7 @@ set(EXTRA_COMPONENT_DIRS
 
 set(
   COMPONENTS
-  "main esptool_py bootloader_support logger task esp_tinyusb"
+  "main esptool_py bootloader_support math logger task esp_tinyusb qtpy"
   CACHE STRING
   "List of components to include"
   )

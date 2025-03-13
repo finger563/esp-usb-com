@@ -16,7 +16,7 @@ static void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event);
 
 static tusb_desc_device_t desc_device = {.bLength = sizeof(tusb_desc_device_t),
                                          .bDescriptorType = TUSB_DESC_DEVICE,
-                                         .bcdUSB = 0x0100,
+                                         .bcdUSB = 0x0200,
                                          .bDeviceClass = TUSB_CLASS_MISC,
                                          .bDeviceSubClass = MISC_SUBCLASS_COMMON,
                                          .bDeviceProtocol = MISC_PROTOCOL_IAD,
@@ -48,10 +48,10 @@ static const char *usb_string_descriptor[5] = {
 // update the configuration descriptor with the new report descriptor size
 static uint8_t usb_configuration_descriptor[] = {
     // Configuration number, interface count, string index, total length, attribute, power in mA
-    TUD_CONFIG_DESCRIPTOR(1, 2, 0, TUSB_DESC_TOTAL_LEN, 0x00, 100),
+    TUD_CONFIG_DESCRIPTOR(1, 2, 0, TUSB_DESC_TOTAL_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
 
     // Interface number, string index, EP notification address and size, ESP data address (out, in) and size
-    TUD_CDC_DESCRIPTOR(0, 4, 0x81, 8, 0x02, 0x82, CFG_TUD_CDC_EP_BUFSIZE),
+    TUD_CDC_DESCRIPTOR(0, 4, 0x81, 8, 0x02, 0x82, 64),
 };
 
 void start_usb_cdc(const std::string& serial_number, const std::string& manufacturer_name, const std::string& product_name,
