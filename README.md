@@ -50,7 +50,8 @@ See the Getting Started Guide for full steps to configure and use ESP-IDF to bui
 
 ## Output
 
-Example screenshot of the console output from this app:
+Example screenshot showing the serial number changing as the device resets:
+![CleanShot 2025-03-12 at 16 50 34](https://github.com/user-attachments/assets/1e42a1ad-a32a-49d7-86c5-616e3e43b69a)
 
 ## Developing
 
