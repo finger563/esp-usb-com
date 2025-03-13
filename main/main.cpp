@@ -33,10 +33,10 @@ extern "C" void app_main(void) {
   // now loop forever
   while (true) {
     std::this_thread::sleep_for(100ms);
-    if (is_usb_mounted()) {
-      logger.info("USB mounted, resetting processor in 100ms");
-      std::this_thread::sleep_for(100ms);
-      esp_restart();
-    }
+    // if (is_usb_mounted()) {
+    //   logger.info("USB mounted, resetting processor in 100ms");
+    //   std::this_thread::sleep_for(100ms);
+    //   esp_restart();
+    // }
   }
 }
